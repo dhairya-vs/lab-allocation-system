@@ -6,80 +6,72 @@
 <style>
 
 body {
+    font-family: Arial;
+    background: #0b0f14;
+    color: #e5e7eb;
     margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #0f172a, #1e3a8a, #0ea5e9);
-    color: white;
 }
 
 .container {
-    max-width: 1000px;
+    max-width: 900px;
     margin: auto;
-    padding: 30px;
+    padding: 20px;
 }
 
 h2 {
     text-align: center;
-    font-size: 32px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
-/* GLASS CARD */
+/* Cards */
 .card {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(12px);
-    border-radius: 15px;
-    padding: 20px;
-    margin: 20px 0;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    background: #1a1f26;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 8px;
+    border: 1px solid #2a2f36;
 }
 
-/* INPUT */
+/* Inputs */
 input {
-    padding: 10px;
-    margin: 6px;
-    border-radius: 8px;
-    border: none;
-    outline: none;
-    width: 160px;
-}
-
-/* BUTTONS */
-button {
-    padding: 10px 16px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    margin: 8px 5px;
-    transition: 0.3s;
-}
-
-.primary {
-    background: linear-gradient(45deg, #3b82f6, #0ea5e9);
+    padding: 8px;
+    margin: 5px;
+    border-radius: 5px;
+    border: 1px solid #333;
+    background: #111;
     color: white;
 }
 
-.success {
-    background: linear-gradient(45deg, #22c55e, #4ade80);
+/* Buttons */
+button {
+    padding: 8px 12px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
+
+/* Neutral colors */
+.add { background: #3a3f46; color: white; }
+.run { background: #16a34a; color: white; }
+.req { background: #a16207; color: white; }
 
 button:hover {
-    transform: scale(1.05);
-    opacity: 0.9;
+    opacity: 0.85;
 }
 
-/* OUTPUT CARDS */
-.output-card {
+/* Output */
+.output {
+    background: #05080c;
+    padding: 10px;
+    border-radius: 6px;
     margin-top: 10px;
-    padding: 12px;
-    border-radius: 10px;
-    background: rgba(0,0,0,0.3);
 }
 
-.green { border-left: 5px solid #22c55e; }
-.orange { border-left: 5px solid orange; }
-.red { border-left: 5px solid red; }
+/* Status colors */
+.green { color: #22c55e; }
+.orange { color: #f59e0b; }
+.red { color: #ef4444; }
 
 </style>
 </head>
@@ -88,36 +80,36 @@ button:hover {
 
 <div class="container">
 
-<h2>💻 Lab Allocation System</h2>
+<h2>Lab Allocation System</h2>
 
 <div class="card">
-<h3>📘 Classes</h3>
+<h3>Classes</h3>
 <div id="classes">
-<input placeholder="Class Name">
+<input placeholder="Class">
 <input placeholder="Students">
 </div>
-<button class="primary" onclick="addClass()">+ Add Class</button>
+<button class="add" onclick="addClass()">Add</button>
 </div>
 
 <div class="card">
-<h3>⏰ Time Slots</h3>
+<h3>Time Slots</h3>
 <div id="slots">
 <input placeholder="9-11">
 </div>
-<button class="primary" onclick="addSlot()">+ Add Slot</button>
+<button class="add" onclick="addSlot()">Add</button>
 </div>
 
 <div class="card">
-<h3>👨‍🏫 Faculty</h3>
+<h3>Faculty</h3>
 <div id="faculties">
-<input placeholder="Faculty Name">
+<input placeholder="Faculty">
 </div>
-<button class="primary" onclick="addFaculty()">+ Add Faculty</button>
+<button class="add" onclick="addFaculty()">Add</button>
 </div>
 
 <div class="card">
-<button class="success" onclick="allocate()">🚀 Allocate</button>
-<button class="primary" onclick="requestComputer()">➕ Request Computer</button>
+<button class="run" onclick="allocate()">Allocate</button>
+<button class="req" onclick="requestComputer()">Request</button>
 </div>
 
 <div id="output"></div>
@@ -128,64 +120,58 @@ button:hover {
 
 let currentLabs = [];
 
-// ADD INPUTS
-function addClass() {
+function addClass(){
 document.getElementById("classes").innerHTML += 
-"<br><input placeholder='Class Name'><input placeholder='Students'>";
+"<br><input placeholder='Class'><input placeholder='Students'>";
 }
 
-function addSlot() {
+function addSlot(){
 document.getElementById("slots").innerHTML += 
-"<br><input placeholder='Time Slot'>";
+"<br><input placeholder='Time'>";
 }
 
-function addFaculty() {
+function addFaculty(){
 document.getElementById("faculties").innerHTML += 
 "<br><input placeholder='Faculty'>";
 }
 
-// LAB GENERATION
-function generateLabs() {
-let labs = [];
-for (let f=0; f<5; f++) {
-    for (let i=1;i<=10;i++) {
-        labs.push({name:"B"+f+String(i).padStart(2,'0'),capacity:50});
-    }
-}
+function generateLabs(){
+let labs=[];
+for(let f=0;f<5;f++){
+for(let i=1;i<=10;i++){
+labs.push({name:"B"+f+String(i).padStart(2,'0'),capacity:50});
+}}
 return labs;
 }
 
-// TIME
-function parseTime(slot){
-let [s,e]=slot.split("-").map(Number);
-return [s,e];
+function parseTime(s){
+let [a,b]=s.split("-").map(Number);
+return [a,b];
 }
 
-// CLASH
-function isAvailable(schedule, slot){
+function isAvailable(schedule,slot){
 let [s1,e1]=parseTime(slot);
 for(let [s2,e2] of schedule){
-    if(!(e1<=s2 || s1>=e2)) return false;
+if(!(e1<=s2 || s1>=e2)) return false;
 }
 return true;
 }
 
-// ALLOCATE
 function allocate(){
 
-let classInputs=document.querySelectorAll("#classes input");
-let slotInputs=document.querySelectorAll("#slots input");
-let facultyInputs=document.querySelectorAll("#faculties input");
+let cInputs=document.querySelectorAll("#classes input");
+let sInputs=document.querySelectorAll("#slots input");
+let fInputs=document.querySelectorAll("#faculties input");
 
 let classes=[];
-for(let i=0;i<classInputs.length;i+=2){
-    let name=classInputs[i].value;
-    let students=parseInt(classInputs[i+1].value);
-    if(name && students) classes.push({name,students});
+for(let i=0;i<cInputs.length;i+=2){
+let name=cInputs[i].value;
+let students=parseInt(cInputs[i+1].value);
+if(name && students) classes.push({name,students});
 }
 
-let slots=Array.from(slotInputs).map(i=>i.value).filter(v=>v);
-let faculties=Array.from(facultyInputs).map(i=>i.value).filter(v=>v);
+let slots=[...sInputs].map(i=>i.value).filter(v=>v);
+let faculties=[...fInputs].map(i=>i.value).filter(v=>v);
 
 classes.sort((a,b)=>b.students-a.students);
 
@@ -193,95 +179,86 @@ let slotMap={};
 slots.forEach(s=>slotMap[s]=[]);
 
 classes.forEach((c,i)=>{
-    let slot=slots[i%slots.length];
-    slotMap[slot].push(c);
+let slot=slots[i%slots.length];
+slotMap[slot].push(c);
 });
 
 let labs=generateLabs();
 let facultySchedule={};
 faculties.forEach(f=>facultySchedule[f]=[]);
 
-let output="<h2>📊 Allocation Result</h2>";
+let out="<h3>Result</h3>";
 
 for(let slot of slots){
 
-output+=`<div class="card"><h3>${slot}</h3>`;
+out+=`<div class="card"><b>${slot}</b><br>`;
 let availableLabs=labs.map(l=>({...l,used:0}));
 
 for(let c of slotMap[slot]){
 
-let assignedFaculty=null;
+let assigned=null;
 
 for(let f of faculties){
-    if(isAvailable(facultySchedule[f],slot)){
-        assignedFaculty=f;
-        facultySchedule[f].push(parseTime(slot));
-        break;
-    }
+if(isAvailable(facultySchedule[f],slot)){
+assigned=f;
+facultySchedule[f].push(parseTime(slot));
+break;
+}
 }
 
-if(!assignedFaculty){
-output+=`<div class="output-card orange">
-❌ ${c.name} → No Faculty (Clash)
-</div>`;
+if(!assigned){
+out+=`<div class="orange">${c.name} → No Faculty</div>`;
 continue;
 }
 
 let students=c.students;
 
-output+=`<div class="output-card green">
-<b>${c.name}</b> (👨‍🏫 ${assignedFaculty})<br>`;
+out+=`<div>${c.name} (${assigned})<br>`;
 
 for(let lab of availableLabs){
-    if(students<=0) break;
+if(students<=0) break;
 
-    let free=lab.capacity-lab.used;
-    let assign=Math.min(students,free);
+let free=lab.capacity-lab.used;
+let assign=Math.min(students,free);
 
-    lab.used+=assign;
-    students-=assign;
+lab.used+=assign;
+students-=assign;
 
-    if(assign>0)
-    output+=`→ ${lab.name} (${lab.used}/50)<br>`;
+if(assign>0)
+out+=`${lab.name} → ${lab.used}/50<br>`;
 }
 
 if(students>0)
-output+=`<span class="red">Remaining: ${students}</span>`;
+out+=`<span class="red">Remaining ${students}</span>`;
 
-output+="</div>";
+out+="</div>";
 }
 
 currentLabs=availableLabs;
-output+="</div>";
+out+="</div>";
 }
 
-document.getElementById("output").innerHTML=output;
+document.getElementById("output").innerHTML=out;
 }
 
-// REQUEST
 function requestComputer(){
 
 if(currentLabs.length===0){
-alert("Run allocation first!");
+alert("Run allocation first");
 return;
 }
 
 for(let lab of currentLabs){
 if(lab.used < lab.capacity){
 lab.used++;
-
-document.getElementById("output").innerHTML+=
-`<div class="output-card green">
-✅ New Student → ${lab.name} (${lab.used}/50)
-</div>`;
+document.getElementById("output").innerHTML += 
+`<div class="green">New Student → ${lab.name} (${lab.used}/50)</div>`;
 return;
 }
 }
 
-document.getElementById("output").innerHTML+=
-`<div class="output-card red">
-❌ No free computers
-</div>`;
+document.getElementById("output").innerHTML += 
+`<div class="red">No space available</div>`;
 }
 
 </script>
