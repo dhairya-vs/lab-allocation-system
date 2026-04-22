@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lab Allocation System</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            padding: 20px;
+        }
+        h2 { text-align: center; }
+        .card {
+            background: #1e293b;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+        }
+        input {
+            padding: 5px;
+            margin: 5px;
+        }
+        button {
+            padding: 8px 12px;
+            margin: 5px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Lab Allocation System</h2>
+
+<div class="card">
+    <h3>Classes</h3>
+    <div id="classes">
+        <input placeholder="Class Name">
+        <input placeholder="Students">
+    </div>
+    <button onclick="addClass()">Add Class</button>
+</div>
+
+<div class="card">
+    <h3>Time Slots</h3>
+    <div id="slots">
+        <input placeholder="9-11">
+    </div>
+    <button onclick="addSlot()">Add Slot</button>
+</div>
+
+<div class="card">
+    <h3>Faculty</h3>
+    <div id="faculties">
+        <input placeholder="Faculty Name">
+    </div>
+    <button onclick="addFaculty()">Add Faculty</button>
+</div>
+
+<button onclick="allocate()">Allocate</button>
+
+<div id="output"></div>
+
+<script>
+
+// ================= ADD INPUTS =================
+function addClass() {
+    document.getElementById("classes").innerHTML += 
+        "<br><input placeholder='Class Name'><input placeholder='Students'>";
+}
+
+function addSlot() {
+    document.getElementById("slots").innerHTML += 
+        "<br><input placeholder='Time Slot'>";
+}
+
+function addFaculty() {
+    document.getElementById("faculties").innerHTML += 
+        "<br><input placeholder='Faculty'>";
+}
+
+// ================= LABS =================
+function generateLabs() {
+    let labs = [];
+    for (let f = 0; f < 5; f++) {
+        for (let i = 1; i <= 10; i++) {
+            labs.push({
+                name: "B" + f + String(i).padStart(2, '0'),
+                capacity: 50
+            });
+        }
+    }
+    return labs;
+}
+
+// ================= TIME =================
+function parseTime(slot) {
+    let parts = slot.split("-");
+    return [parseInt(parts[0]), parseInt(parts[1])];
+}
+
+// ================= CLASH CHECK =================
+function isAvailable(schedule, slot) {
+    let [s1, e1] = parseTime(slot);
+
+    for (let [s2, e2] of schedule) {
+        if (!(e1 <= s2 || s1 >= e2)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// ================= MAIN LOGIC =================
+function allocate() {
+
+    let classInputs = document.querySelectorAll("#classes input");
+    let slotInputs = document.querySelectorAll("#slots input");
+    let facultyInputs = document.querySelectorAll("#faculties input");
+
+    let classes = [];
+    for (let i = 0; i < classInputs.length; i += 2) {
+        let name = classInputs[i].value;
+        let students = parseInt(classInputs[i+1].value);
+        if (name && students) {
+            classes.push({ name, students });
+        }
+    }
+
+    let slots = Array.from(slotInputs).map(i => i.value).filter(v => v);
+    let faculties = Array.from(facultyInputs).map(i => i.value).filter(v => v);
+
+    // GREEDY SORT
+    classes.sort((a, b) => b.students - a.students);
+
+    let slotMap = {};
+    slots.forEach(s => slotMap[s] = []);
+
+    classes.forEach((c, i) => {
+        let slot = slots[i % slots.length];
+        slotMap[slot].push(c);
+    });
+
+    let labs = generateLabs();
+
+    let facultySchedule = {};
+    faculties.forEach(f => facultySchedule[f] = []);
+
+    let output = "<h2>Final Allocation</h2>";
+
+    for (let slot of slots) {
+        output += `<div class="card"><h3>${slot}</h3>`;
+        let availableLabs = [...labs];
+
+        for (let c of slotMap[slot]) {
+
+            let assignedFaculty = null;
+
+            for (let f of faculties) {
+                if (isAvailable(facultySchedule[f], slot)) {
+                    assignedFaculty = f;
+                    facultySchedule[f].push(parseTime(slot));
+                    break;
+                }
+            }
+
+            if (!assignedFaculty) {
+                output += `<b>${c.name}</b><br>
+                <span style='color:orange'>No Faculty (Clash)</span><br><br>`;
+                continue;
+            }
+
+            let students = c.students;
+
+            output += `<b>${c.name} (Faculty: ${assignedFaculty})</b><br>`;
+
+            while (students > 0 && availableLabs.length) {
+                let lab = availableLabs.shift();
+                let assigned = Math.min(students, lab.capacity);
+                students -= assigned;
+
+                output += `→ ${lab.name} | ${assigned}/50<br>`;
+            }
+
+            if (students > 0) {
+                output += `<span style='color:red'>Remaining: ${students}</span><br>`;
+            }
+
+            output += "<br>";
+        }
+
+        output += "</div>";
+    }
+
+    document.getElementById("output").innerHTML = output;
+}
+
+</script>
+
+</body>
+</html>
