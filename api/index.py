@@ -111,3 +111,5 @@ for slot, classes_data in final_allocation.items():
             print(f"    → Lab {e['lab']} | {e['students']}/50 students")
 
 print("\n" + "="*60)
+
+handler = app
