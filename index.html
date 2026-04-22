@@ -65,10 +65,14 @@
 </div>
 
 <button onclick="allocate()">Allocate</button>
+<button onclick="requestComputer()">Request Computer</button>
 
 <div id="output"></div>
 
 <script>
+
+// ================= GLOBAL STORAGE =================
+let currentLabs = [];
 
 // ================= ADD INPUTS =================
 function addClass() {
@@ -86,7 +90,7 @@ function addFaculty() {
         "<br><input placeholder='Faculty'>";
 }
 
-// ================= LABS =================
+// ================= LAB GENERATION =================
 function generateLabs() {
     let labs = [];
     for (let f = 0; f < 5; f++) {
@@ -100,7 +104,7 @@ function generateLabs() {
     return labs;
 }
 
-// ================= TIME =================
+// ================= TIME PARSE =================
 function parseTime(slot) {
     let parts = slot.split("-");
     return [parseInt(parts[0]), parseInt(parts[1])];
@@ -118,7 +122,7 @@ function isAvailable(schedule, slot) {
     return true;
 }
 
-// ================= MAIN LOGIC =================
+// ================= MAIN ALLOCATION =================
 function allocate() {
 
     let classInputs = document.querySelectorAll("#classes input");
@@ -137,7 +141,6 @@ function allocate() {
     let slots = Array.from(slotInputs).map(i => i.value).filter(v => v);
     let faculties = Array.from(facultyInputs).map(i => i.value).filter(v => v);
 
-    // GREEDY SORT
     classes.sort((a, b) => b.students - a.students);
 
     let slotMap = {};
@@ -157,7 +160,12 @@ function allocate() {
 
     for (let slot of slots) {
         output += `<div class="card"><h3>${slot}</h3>`;
-        let availableLabs = [...labs];
+
+        let availableLabs = labs.map(l => ({
+            name: l.name,
+            capacity: l.capacity,
+            used: 0
+        }));
 
         for (let c of slotMap[slot]) {
 
@@ -181,12 +189,18 @@ function allocate() {
 
             output += `<b>${c.name} (Faculty: ${assignedFaculty})</b><br>`;
 
-            while (students > 0 && availableLabs.length) {
-                let lab = availableLabs.shift();
-                let assigned = Math.min(students, lab.capacity);
+            for (let lab of availableLabs) {
+                if (students <= 0) break;
+
+                let free = lab.capacity - lab.used;
+                let assigned = Math.min(students, free);
+
+                lab.used += assigned;
                 students -= assigned;
 
-                output += `→ ${lab.name} | ${assigned}/50<br>`;
+                if (assigned > 0) {
+                    output += `→ ${lab.name} | ${lab.used}/${lab.capacity}<br>`;
+                }
             }
 
             if (students > 0) {
@@ -196,10 +210,41 @@ function allocate() {
             output += "<br>";
         }
 
+        currentLabs = availableLabs; // store for request system
+
         output += "</div>";
     }
 
     document.getElementById("output").innerHTML = output;
+}
+
+// ================= REQUEST SYSTEM =================
+function requestComputer() {
+
+    if (currentLabs.length === 0) {
+        alert("Run allocation first!");
+        return;
+    }
+
+    for (let lab of currentLabs) {
+        if (lab.used < lab.capacity) {
+
+            lab.used += 1;
+
+            document.getElementById("output").innerHTML += 
+                `<br><span style='color:lightgreen'>
+                New Student → Assigned to ${lab.name} 
+                (${lab.used}/${lab.capacity})
+                </span>`;
+
+            return;
+        }
+    }
+
+    document.getElementById("output").innerHTML += 
+        `<br><span style='color:red'>
+        No free computers available
+        </span>`;
 }
 
 </script>
