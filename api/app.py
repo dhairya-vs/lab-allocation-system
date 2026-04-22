@@ -165,11 +165,5 @@ def allocate():
 
     return html
 
-
-# ================= RUN LOCAL =================
-if __name__ == "__main__":
-    app.run(debug=True)
-
-
 # ================= VERCEL =================
 handler = app
