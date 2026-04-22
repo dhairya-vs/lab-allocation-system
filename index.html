@@ -6,89 +6,111 @@
 <style>
 
 body {
-    font-family: Arial;
-    background: #0b0f14;
-    color: #e5e7eb;
     margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: #0c0f14;
+    color: #e4e6eb;
 }
 
-.container {
-    max-width: 900px;
-    margin: auto;
+/* HEADER */
+header {
     padding: 20px;
-}
-
-h2 {
+    font-size: 22px;
+    font-weight: 600;
     text-align: center;
-    margin-bottom: 20px;
+    background: #11151c;
+    border-bottom: 1px solid #1f242c;
 }
 
-/* Cards */
+/* CONTAINER */
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 25px;
+}
+
+/* CARD */
 .card {
-    background: #1a1f26;
-    padding: 15px;
-    margin: 15px 0;
-    border-radius: 8px;
-    border: 1px solid #2a2f36;
+    background: #141a22;
+    padding: 18px;
+    margin-bottom: 18px;
+    border-radius: 12px;
+    border: 1px solid #1f242c;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
 
-/* Inputs */
+/* INPUT */
 input {
-    padding: 8px;
-    margin: 5px;
-    border-radius: 5px;
-    border: 1px solid #333;
-    background: #111;
+    padding: 10px;
+    margin: 6px;
+    border-radius: 6px;
+    border: 1px solid #2a3038;
+    background: #0c0f14;
     color: white;
 }
 
-/* Buttons */
+/* BUTTON */
 button {
-    padding: 8px 12px;
-    margin: 5px;
+    padding: 10px 16px;
+    margin: 6px 4px;
+    border-radius: 6px;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
+    font-weight: 500;
+    transition: 0.2s;
 }
-
-/* Neutral colors */
-.add { background: #3a3f46; color: white; }
-.run { background: #16a34a; color: white; }
-.req { background: #a16207; color: white; }
 
 button:hover {
     opacity: 0.85;
 }
 
-/* Output */
-.output {
-    background: #05080c;
-    padding: 10px;
-    border-radius: 6px;
-    margin-top: 10px;
+/* COLORS */
+.btn-add { background: #2a3038; color: white; }
+.btn-run { background: #1f7a4d; color: white; }
+.btn-req { background: #7c5cff; color: white; }
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
 }
 
-/* Status colors */
-.green { color: #22c55e; }
-.orange { color: #f59e0b; }
-.red { color: #ef4444; }
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #2a3038;
+}
+
+th {
+    background: #1a2028;
+    text-align: left;
+}
+
+tr:hover {
+    background: #1a1f26;
+}
+
+/* STATUS */
+.green { color: #4ade80; }
+.red { color: #f87171; }
+.orange { color: #fbbf24; }
 
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<header>💻 Lab Allocation Dashboard</header>
 
-<h2>Lab Allocation System</h2>
+<div class="container">
 
 <div class="card">
 <h3>Classes</h3>
 <div id="classes">
-<input placeholder="Class">
+<input placeholder="Class Name">
 <input placeholder="Students">
 </div>
-<button class="add" onclick="addClass()">Add</button>
+<button class="btn-add" onclick="addClass()">+ Add</button>
 </div>
 
 <div class="card">
@@ -96,20 +118,20 @@ button:hover {
 <div id="slots">
 <input placeholder="9-11">
 </div>
-<button class="add" onclick="addSlot()">Add</button>
+<button class="btn-add" onclick="addSlot()">+ Add</button>
 </div>
 
 <div class="card">
 <h3>Faculty</h3>
 <div id="faculties">
-<input placeholder="Faculty">
+<input placeholder="Faculty Name">
 </div>
-<button class="add" onclick="addFaculty()">Add</button>
+<button class="btn-add" onclick="addFaculty()">+ Add</button>
 </div>
 
 <div class="card">
-<button class="run" onclick="allocate()">Allocate</button>
-<button class="req" onclick="requestComputer()">Request</button>
+<button class="btn-run" onclick="allocate()">Allocate</button>
+<button class="btn-req" onclick="requestComputer()">Request Computer</button>
 </div>
 
 <div id="output"></div>
@@ -120,14 +142,15 @@ button:hover {
 
 let currentLabs = [];
 
+/* ADD INPUTS */
 function addClass(){
 document.getElementById("classes").innerHTML += 
-"<br><input placeholder='Class'><input placeholder='Students'>";
+"<br><input placeholder='Class Name'><input placeholder='Students'>";
 }
 
 function addSlot(){
 document.getElementById("slots").innerHTML += 
-"<br><input placeholder='Time'>";
+"<br><input placeholder='Time Slot'>";
 }
 
 function addFaculty(){
@@ -135,6 +158,7 @@ document.getElementById("faculties").innerHTML +=
 "<br><input placeholder='Faculty'>";
 }
 
+/* LABS */
 function generateLabs(){
 let labs=[];
 for(let f=0;f<5;f++){
@@ -144,11 +168,13 @@ labs.push({name:"B"+f+String(i).padStart(2,'0'),capacity:50});
 return labs;
 }
 
+/* TIME */
 function parseTime(s){
 let [a,b]=s.split("-").map(Number);
 return [a,b];
 }
 
+/* CLASH */
 function isAvailable(schedule,slot){
 let [s1,e1]=parseTime(slot);
 for(let [s2,e2] of schedule){
@@ -157,6 +183,7 @@ if(!(e1<=s2 || s1>=e2)) return false;
 return true;
 }
 
+/* ALLOCATE */
 function allocate(){
 
 let cInputs=document.querySelectorAll("#classes input");
@@ -187,11 +214,14 @@ let labs=generateLabs();
 let facultySchedule={};
 faculties.forEach(f=>facultySchedule[f]=[]);
 
-let out="<h3>Result</h3>";
+let out="<h3>Allocation Result</h3>";
 
 for(let slot of slots){
 
-out+=`<div class="card"><b>${slot}</b><br>`;
+out+=`<div class="card"><h4>${slot}</h4>`;
+out+=`<table>
+<tr><th>Class</th><th>Faculty</th><th>Lab</th><th>Students</th></tr>`;
+
 let availableLabs=labs.map(l=>({...l,used:0}));
 
 for(let c of slotMap[slot]){
@@ -207,13 +237,11 @@ break;
 }
 
 if(!assigned){
-out+=`<div class="orange">${c.name} → No Faculty</div>`;
+out+=`<tr><td>${c.name}</td><td colspan="3" class="orange">No Faculty</td></tr>`;
 continue;
 }
 
 let students=c.students;
-
-out+=`<div>${c.name} (${assigned})<br>`;
 
 for(let lab of availableLabs){
 if(students<=0) break;
@@ -224,23 +252,29 @@ let assign=Math.min(students,free);
 lab.used+=assign;
 students-=assign;
 
-if(assign>0)
-out+=`${lab.name} → ${lab.used}/50<br>`;
+if(assign>0){
+out+=`<tr>
+<td>${c.name}</td>
+<td>${assigned}</td>
+<td>${lab.name}</td>
+<td>${assign}</td>
+</tr>`;
+}
 }
 
-if(students>0)
-out+=`<span class="red">Remaining ${students}</span>`;
-
-out+="</div>";
+if(students>0){
+out+=`<tr><td>${c.name}</td><td colspan="3" class="red">Remaining ${students}</td></tr>`;
+}
 }
 
 currentLabs=availableLabs;
-out+="</div>";
+out+="</table></div>";
 }
 
 document.getElementById("output").innerHTML=out;
 }
 
+/* REQUEST */
 function requestComputer(){
 
 if(currentLabs.length===0){
@@ -252,13 +286,13 @@ for(let lab of currentLabs){
 if(lab.used < lab.capacity){
 lab.used++;
 document.getElementById("output").innerHTML += 
-`<div class="green">New Student → ${lab.name} (${lab.used}/50)</div>`;
+`<p class="green">New Student → ${lab.name}</p>`;
 return;
 }
 }
 
 document.getElementById("output").innerHTML += 
-`<div class="red">No space available</div>`;
+`<p class="red">No space available</p>`;
 }
 
 </script>
