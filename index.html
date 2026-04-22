@@ -5,130 +5,127 @@
 
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 body {
     margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #5f6fff, #7b5cff, #9b59b6);
-    color: white;
+    font-family: 'Inter', sans-serif;
+    background: #0e1116;
+    color: #e6edf3;
 }
 
 /* HEADER */
 header {
     text-align: center;
-    padding: 25px;
-    font-size: 28px;
+    padding: 20px;
+    font-size: 24px;
     font-weight: 600;
+    border-bottom: 1px solid #1f2937;
 }
 
-/* GRID */
+/* CONTAINER */
 .container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 25px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    padding: 20px;
-    max-width: 1100px;
-    margin: auto;
 }
 
-/* FULL WIDTH CARD */
 .full {
     grid-column: span 2;
 }
 
 /* CARD */
 .card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(12px);
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    background: #151a22;
+    padding: 18px;
+    border-radius: 12px;
+    border: 1px solid #222938;
 }
 
 /* INPUT */
 input {
-    width: 90%;
+    width: 95%;
     padding: 10px;
-    margin: 8px 0;
-    border-radius: 8px;
-    border: none;
-    outline: none;
+    margin: 6px 0;
+    border-radius: 6px;
+    border: 1px solid #2c3445;
+    background: #0e1116;
+    color: white;
 }
 
 /* BUTTON */
 button {
-    padding: 10px 18px;
+    padding: 10px 16px;
     margin-top: 10px;
-    border-radius: 10px;
+    border-radius: 6px;
     border: none;
     cursor: pointer;
     font-weight: 500;
-    background: #00c2ff;
-    color: white;
-    transition: 0.2s;
 }
+
+.add { background: #2c3445; color: white; }
+.run { background: #16a34a; color: white; }
+.req { background: #14b8a6; color: white; }
 
 button:hover {
-    transform: scale(1.05);
+    opacity: 0.85;
 }
 
-/* RESULT */
+/* RESULT BOX */
 .result {
     margin-top: 10px;
     padding: 10px;
-    border-radius: 10px;
-    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    background: #0b0f14;
 }
 
-.green { color: #00ff9d; }
-.red { color: #ff6b6b; }
-.orange { color: #ffd166; }
+/* STATUS */
+.green { color: #22c55e; }
+.red { color: #ef4444; }
+.orange { color: #f59e0b; }
 
 </style>
 </head>
 
 <body>
 
-<header>💻 Lab Allocation System</header>
+<header>Lab Allocation System</header>
 
 <div class="container">
 
-<!-- CLASSES -->
 <div class="card">
-<h3>Add Classes</h3>
+<h3>Classes</h3>
 <div id="classes">
 <input placeholder="Class Name">
 <input placeholder="Students">
 </div>
-<button onclick="addClass()">+ Add Class</button>
+<button class="add" onclick="addClass()">+ Add</button>
 </div>
 
-<!-- SLOTS -->
 <div class="card">
 <h3>Time Slots</h3>
 <div id="slots">
 <input placeholder="9-11">
 </div>
-<button onclick="addSlot()">+ Add Slot</button>
+<button class="add" onclick="addSlot()">+ Add</button>
 </div>
 
-<!-- FACULTY -->
 <div class="card full">
 <h3>Faculty</h3>
 <div id="faculties">
 <input placeholder="Faculty Name">
 </div>
-<button onclick="addFaculty()">+ Add Faculty</button>
+<button class="add" onclick="addFaculty()">+ Add</button>
 </div>
 
-<!-- ACTION -->
 <div class="card full">
-<button onclick="allocate()">🚀 Allocate</button>
-<button onclick="requestComputer()">➕ Request Computer</button>
+<button class="run" onclick="allocate()">Allocate</button>
+<button class="req" onclick="requestComputer()">Request Computer</button>
 </div>
 
-<!-- OUTPUT -->
 <div class="card full">
 <h3>Allocation Result</h3>
 <div id="output"></div>
@@ -140,7 +137,6 @@ button:hover {
 
 let currentLabs = [];
 
-/* ADD INPUTS */
 function addClass(){
 document.getElementById("classes").innerHTML += 
 "<br><input placeholder='Class Name'><input placeholder='Students'>";
@@ -156,7 +152,6 @@ document.getElementById("faculties").innerHTML +=
 "<br><input placeholder='Faculty'>";
 }
 
-/* LABS */
 function generateLabs(){
 let labs=[];
 for(let f=0;f<5;f++){
@@ -166,13 +161,11 @@ labs.push({name:"B"+f+String(i).padStart(2,'0'),capacity:50});
 return labs;
 }
 
-/* TIME */
 function parseTime(s){
 let [a,b]=s.split("-").map(Number);
 return [a,b];
 }
 
-/* CLASH */
 function isAvailable(schedule,slot){
 let [s1,e1]=parseTime(slot);
 for(let [s2,e2] of schedule){
@@ -181,7 +174,6 @@ if(!(e1<=s2 || s1>=e2)) return false;
 return true;
 }
 
-/* ALLOCATE */
 function allocate(){
 
 let cInputs=document.querySelectorAll("#classes input");
@@ -266,7 +258,6 @@ out+="</div>";
 document.getElementById("output").innerHTML=out;
 }
 
-/* REQUEST */
 function requestComputer(){
 
 if(currentLabs.length===0){
