@@ -5,153 +5,132 @@
 
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
 body {
     margin: 0;
-    font-family: 'Inter', sans-serif;
-    background: #0b0f14;
-    color: #e6edf3;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #5f6fff, #7b5cff, #9b59b6);
+    color: white;
 }
 
 /* HEADER */
 header {
-    padding: 20px 30px;
-    font-size: 22px;
-    font-weight: 600;
-    background: #0f141b;
-    border-bottom: 1px solid #1f242c;
-}
-
-/* LAYOUT */
-.wrapper {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    height: 100vh;
-}
-
-/* SIDEBAR */
-.sidebar {
-    background: #0f141b;
-    border-right: 1px solid #1f242c;
-    padding: 20px;
-}
-
-.sidebar h3 {
-    margin-bottom: 10px;
-    font-size: 16px;
-    color: #9da5b4;
-}
-
-/* MAIN */
-.main {
+    text-align: center;
     padding: 25px;
-    overflow-y: auto;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+/* GRID */
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1100px;
+    margin: auto;
+}
+
+/* FULL WIDTH CARD */
+.full {
+    grid-column: span 2;
 }
 
 /* CARD */
 .card {
-    background: #121821;
-    padding: 18px;
-    border-radius: 10px;
-    border: 1px solid #1f242c;
-    margin-bottom: 18px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
 }
 
 /* INPUT */
 input {
-    width: 100%;
+    width: 90%;
     padding: 10px;
-    margin: 6px 0;
-    border-radius: 6px;
-    border: 1px solid #2a3038;
-    background: #0b0f14;
-    color: white;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: none;
+    outline: none;
 }
 
 /* BUTTON */
 button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 8px;
-    border-radius: 6px;
+    padding: 10px 18px;
+    margin-top: 10px;
+    border-radius: 10px;
     border: none;
     cursor: pointer;
     font-weight: 500;
+    background: #00c2ff;
+    color: white;
+    transition: 0.2s;
 }
-
-.add { background: #1f242c; color: white; }
-.run { background: #16a34a; color: white; }
-.req { background: #6d28d9; color: white; }
 
 button:hover {
-    opacity: 0.85;
+    transform: scale(1.05);
 }
 
-/* TABLE */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 12px;
-}
-
-th, td {
+/* RESULT */
+.result {
+    margin-top: 10px;
     padding: 10px;
-    border-bottom: 1px solid #1f242c;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.2);
 }
 
-th {
-    color: #9da5b4;
-    font-weight: 500;
-}
-
-tr:hover {
-    background: #161c24;
-}
-
-/* STATUS */
-.green { color: #22c55e; }
-.red { color: #ef4444; }
-.orange { color: #f59e0b; }
+.green { color: #00ff9d; }
+.red { color: #ff6b6b; }
+.orange { color: #ffd166; }
 
 </style>
 </head>
 
 <body>
 
-<header>Lab Allocation Dashboard</header>
+<header>💻 Lab Allocation System</header>
 
-<div class="wrapper">
+<div class="container">
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-
-<h3>Classes</h3>
+<!-- CLASSES -->
+<div class="card">
+<h3>Add Classes</h3>
 <div id="classes">
 <input placeholder="Class Name">
 <input placeholder="Students">
 </div>
-<button class="add" onclick="addClass()">Add Class</button>
+<button onclick="addClass()">+ Add Class</button>
+</div>
 
+<!-- SLOTS -->
+<div class="card">
 <h3>Time Slots</h3>
 <div id="slots">
 <input placeholder="9-11">
 </div>
-<button class="add" onclick="addSlot()">Add Slot</button>
+<button onclick="addSlot()">+ Add Slot</button>
+</div>
 
+<!-- FACULTY -->
+<div class="card full">
 <h3>Faculty</h3>
 <div id="faculties">
 <input placeholder="Faculty Name">
 </div>
-<button class="add" onclick="addFaculty()">Add Faculty</button>
-
-<button class="run" onclick="allocate()">Allocate</button>
-<button class="req" onclick="requestComputer()">Request Computer</button>
-
+<button onclick="addFaculty()">+ Add Faculty</button>
 </div>
 
-<!-- MAIN -->
-<div class="main">
+<!-- ACTION -->
+<div class="card full">
+<button onclick="allocate()">🚀 Allocate</button>
+<button onclick="requestComputer()">➕ Request Computer</button>
+</div>
+
+<!-- OUTPUT -->
+<div class="card full">
+<h3>Allocation Result</h3>
 <div id="output"></div>
 </div>
 
@@ -161,20 +140,20 @@ tr:hover {
 
 let currentLabs = [];
 
-/* INPUT FUNCTIONS */
+/* ADD INPUTS */
 function addClass(){
 document.getElementById("classes").innerHTML += 
-"<input placeholder='Class Name'><input placeholder='Students'>";
+"<br><input placeholder='Class Name'><input placeholder='Students'>";
 }
 
 function addSlot(){
 document.getElementById("slots").innerHTML += 
-"<input placeholder='Time Slot'>";
+"<br><input placeholder='Time Slot'>";
 }
 
 function addFaculty(){
 document.getElementById("faculties").innerHTML += 
-"<input placeholder='Faculty'>";
+"<br><input placeholder='Faculty'>";
 }
 
 /* LABS */
@@ -202,7 +181,7 @@ if(!(e1<=s2 || s1>=e2)) return false;
 return true;
 }
 
-/* ALLOCATION */
+/* ALLOCATE */
 function allocate(){
 
 let cInputs=document.querySelectorAll("#classes input");
@@ -233,14 +212,11 @@ let labs=generateLabs();
 let facultySchedule={};
 faculties.forEach(f=>facultySchedule[f]=[]);
 
-let out="<div class='card'><h3>Allocation Result</h3>";
+let out="";
 
 for(let slot of slots){
 
-out+=`<h4>${slot}</h4>`;
-out+=`<table>
-<tr><th>Class</th><th>Faculty</th><th>Lab</th><th>Students</th></tr>`;
-
+out+=`<div class="result"><b>${slot}</b><br>`;
 let availableLabs=labs.map(l=>({...l,used:0}));
 
 for(let c of slotMap[slot]){
@@ -256,11 +232,13 @@ break;
 }
 
 if(!assigned){
-out+=`<tr><td>${c.name}</td><td colspan="3" class="orange">No Faculty</td></tr>`;
+out+=`<div class="orange">${c.name} → No Faculty</div>`;
 continue;
 }
 
 let students=c.students;
+
+out+=`<div><b>${c.name}</b> (${assigned})<br>`;
 
 for(let lab of availableLabs){
 if(students<=0) break;
@@ -271,26 +249,19 @@ let assign=Math.min(students,free);
 lab.used+=assign;
 students-=assign;
 
-if(assign>0){
-out+=`<tr>
-<td>${c.name}</td>
-<td>${assigned}</td>
-<td>${lab.name}</td>
-<td>${assign}</td>
-</tr>`;
-}
+if(assign>0)
+out+=`${lab.name} → ${lab.used}/50<br>`;
 }
 
-if(students>0){
-out+=`<tr><td>${c.name}</td><td colspan="3" class="red">Remaining ${students}</td></tr>`;
-}
+if(students>0)
+out+=`<span class="red">Remaining ${students}</span>`;
+
+out+="</div>";
 }
 
 currentLabs=availableLabs;
-out+="</table>";
-}
-
 out+="</div>";
+}
 
 document.getElementById("output").innerHTML=out;
 }
@@ -307,13 +278,13 @@ for(let lab of currentLabs){
 if(lab.used < lab.capacity){
 lab.used++;
 document.getElementById("output").innerHTML += 
-`<p class="green">New Student → ${lab.name}</p>`;
+`<div class="green">New Student → ${lab.name}</div>`;
 return;
 }
 }
 
 document.getElementById("output").innerHTML += 
-`<p class="red">No space available</p>`;
+`<div class="red">No space available</div>`;
 }
 
 </script>
